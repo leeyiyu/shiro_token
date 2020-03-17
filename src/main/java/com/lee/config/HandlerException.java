@@ -1,5 +1,7 @@
 package com.lee.config;
 
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -8,7 +10,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
- *
  * 功能描述: 统一处理异常返回
  *
  * @param:
@@ -43,7 +44,7 @@ public class HandlerException {
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = UnauthorizedException.class)
     @ResponseBody
-    public Object unauthorizedError(Exception e) {
+    public Object unauthorizedException(Exception e) {
         return "无此权限！";
     }
 

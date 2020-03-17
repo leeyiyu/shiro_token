@@ -45,24 +45,6 @@ public class Controller {
         }
     }
 
-    @GetMapping("/home")
-    @RequiresPermissions("home")
-    public Object home(){
-        return "home";
-    }
-
-    @GetMapping("/myName")
-    @RequiresPermissions("myName")
-    public Object myName(){
-        return "myName";
-    }
-
-    @GetMapping("/otherName")
-    @RequiresPermissions("otherName")
-    public Object otherName(){
-        return "otherName";
-    }
-
     @PostMapping("/logout")
     public Object logout() {
         try {
@@ -72,6 +54,31 @@ public class Controller {
         } catch (Exception e) {
             return "退出登录失败！";
         }
+    }
+
+
+    @GetMapping("/poetry1")
+    @RequiresPermissions("poetry1")
+    public Object poetry1(){
+        return "床前明月光";
+    }
+
+    @GetMapping("/poetry2")
+    @RequiresPermissions("poetry2")
+    public Object poetry2(){
+        return "疑是地上霜";
+    }
+
+    @GetMapping("/poetry3")
+    @RequiresPermissions("poetry3")
+    public Object poetry3(){
+        return "举头望明月";
+    }
+
+    @GetMapping("/poetry4")
+    @RequiresPermissions("poetry4")
+    public Object poetry4(){
+        return "低头思故乡";
     }
 
 

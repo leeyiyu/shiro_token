@@ -1,7 +1,5 @@
 package com.lee.config;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.web.servlet.ShiroHttpServletRequest;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.apache.shiro.web.util.WebUtils;
 
@@ -23,27 +21,14 @@ public class MySessionManager extends DefaultWebSessionManager {
 
     private static final String AUTHORIZATION = "Authorization";
 
-    private static final String REFERENCED_SESSION_ID_SOURCE = "Stateless request";
-
     public MySessionManager() {
         super();
-        //失效时间
     }
 
 
     @Override
     protected Serializable getSessionId(ServletRequest request, ServletResponse response) {
-        String sessionId = WebUtils.toHttp(request).getHeader(AUTHORIZATION);
-        //如果请求头中有 Authorization 则其值为sessionId
-        if (!StringUtils.isEmpty(sessionId)) {
-            request.setAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_ID_SOURCE, REFERENCED_SESSION_ID_SOURCE);
-            request.setAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_ID, sessionId);
-            request.setAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_ID_IS_VALID, Boolean.TRUE);
-            return sessionId;
-        } else {
-            //否则按默认规则从cookie取sessionId
-            sessionId = (String)super.getSessionId(request, response);
-            return sessionId;
-        }
+        //修改shiro管理sessionId的方式，改为获取请求头，前端时header必须带上 Authorization:sessionId
+        return WebUtils.toHttp(request).getHeader(AUTHORIZATION);
     }
 }

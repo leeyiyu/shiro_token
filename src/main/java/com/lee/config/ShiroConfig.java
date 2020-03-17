@@ -30,7 +30,7 @@ import java.util.Map;
 public class ShiroConfig {
 
     /**
-     * 先走 filter ，然后 filter 如果检测到请求头存在 token，则用 token 去 login，走 Realm 去验证
+     * 设置/login /logout 两个请求可以任意访问
      */
     @Bean
     public ShiroFilterFactoryBean factory(SecurityManager securityManager) {
@@ -43,34 +43,36 @@ public class ShiroConfig {
         filterMap.put("apiPathPermissionFilter", new ApiPathPermissionFilter());
         factoryBean.setFilters(filterMap);
 
-        //拦截与开放规范
         Map<String, String> filterRuleMap = new LinkedHashMap<>();
+        //配置退出 过滤器,其中的具体的退出代码Shiro已经替我们实现了
+        filterRuleMap.put("/logout", "logout");
+        // 配置不会被拦截的链接 顺序判断
         filterRuleMap.put("/login", "anon");
-        filterRuleMap.put("/logout", "anon");
-        // 所有请求通过我们自己的Filter
+        // 其他请求通过我们自己的apiPathPermissionFilter
         filterRuleMap.put("/*", "apiPathPermissionFilter");
         filterRuleMap.put("/**", "apiPathPermissionFilter");
         filterRuleMap.put("/*.*", "apiPathPermissionFilter");
         factoryBean.setFilterChainDefinitionMap(filterRuleMap);
 
-
         return factoryBean;
     }
 
     /**
-     * 注入 securityManager
+     * SecurityManager安全管理器,是Shiro的核心
      */
     @Bean
     public SecurityManager securityManager(MyRealm myRealm) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-        // 设置自定义 realm.
+        //设置session生命周期
         securityManager.setSessionManager(sessionManager());
+        // 设置自定义 realm
         securityManager.setRealm(myRealm);
         return securityManager;
     }
 
     /**
-     * 添加注解支持
+     * 开启Shiro的注解(如@RequiresRoles,@RequiresPermissions),需借助SpringAOP扫描使用Shiro注解的类,并在必要时进行安全逻辑验证
+     * 配置以下两个bean(DefaultAdvisorAutoProxyCreator和AuthorizationAttributeSourceAdvisor)即可实现此功能
      */
     @Bean
     public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
@@ -82,15 +84,8 @@ public class ShiroConfig {
     }
 
     /**
-     * 自定义sessionManager
+     * 开启aop注解支持
      */
-    @Bean
-    public SessionManager sessionManager() {
-        MySessionManager mySessionManager = new MySessionManager();
-        mySessionManager.setGlobalSessionTimeout(MySessionManager.DEFAULT_GLOBAL_SESSION_TIMEOUT);
-        return mySessionManager;
-    }
-
     @Bean
     public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager) {
         AuthorizationAttributeSourceAdvisor advisor = new AuthorizationAttributeSourceAdvisor();
@@ -98,6 +93,23 @@ public class ShiroConfig {
         return advisor;
     }
 
+    /**
+     * 自定义sessionManager
+     */
+    @Bean
+    public SessionManager sessionManager() {
+        //由shiro管理session，每次访问后会重置过期时间
+        MySessionManager mySessionManager = new MySessionManager();
+        //设置过期时间，单位：毫秒
+        mySessionManager.setGlobalSessionTimeout(MySessionManager.DEFAULT_GLOBAL_SESSION_TIMEOUT);
+        return mySessionManager;
+    }
+
+
+    /**
+     * LifecycleBeanPostProcessor将Initializable和Destroyable的实现类统一在其内部,
+     * 自动分别调用了Initializable.init()和Destroyable.destroy()方法,从而达到管理shiro bean生命周期的目的
+     */
     @Bean
     public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
         return new LifecycleBeanPostProcessor();

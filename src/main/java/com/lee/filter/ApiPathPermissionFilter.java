@@ -37,16 +37,6 @@ public class ApiPathPermissionFilter extends PathMatchingFilter {
             httpResponse.setStatus(HttpServletResponse.SC_OK);
             httpResponse.setContentType("application/json;charset=utf-8");
             httpResponse.getWriter().write("{\"status\":" + HttpServletResponse.SC_UNAUTHORIZED + ",\"msg\":\"会话失效，请重新登录!\"}");
-
-
-            httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
-            httpResponse.setHeader("Access-Control-Allow-Origin",((HttpServletRequest) request).getHeader("origin"));
-            httpResponse.setHeader("Cache-Control", "no-cache");
-            httpResponse.setHeader("Access-Control-Allow-Methods", "POST, GET, DELETE, PUT");
-            httpResponse.setHeader("Access-Control-Max-Age", "0");
-            httpResponse.setHeader("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept, authorization, " +
-                    "WG-App-Version, WG-Device-Id, WG-Network-Type, WG-Vendor, WG-OS-Type, WG-OS-Version, WG-Device-Model, WG-CPU, WG-Sid, WG-App-Id, WG-Token");
-            httpResponse.setHeader("XDomainRequestAllowed", "1");
             return false;
         } else {
             return true;

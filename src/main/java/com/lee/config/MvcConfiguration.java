@@ -20,7 +20,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        //这里可以添加多个拦截器
+        //为所有请求处理跨域问题
         registry.addInterceptor(new UrlInterceptor()).addPathPatterns("/**");
         super.addInterceptors(registry);
     }

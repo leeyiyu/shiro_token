@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * 功能描述: url拦截器
+ * 功能描述: url拦截器,处理前后端分离跨域问题
  *
  * @param:
  * @return:
