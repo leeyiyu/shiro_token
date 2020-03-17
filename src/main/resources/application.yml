@@ -1,0 +1,12 @@
+password_salt: shiro_token
+
+spring:
+  http:
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+
+
+server:
+  port: 8088
